@@ -129,6 +129,6 @@ with tab3:
 # --- PROFESSIONAL FOOTER ---
 st.markdown(f"""
     <div class="footer">
-        Developed by <b>Abdelrahim Elsweedy</b> | Senior Student at University of Hertfordshire | CFA L1 Candidate
+        Developed by <b>Abdelrahim Elsweedy</b> | FMVA | Certified Data Analayst
     </div>
     """, unsafe_allow_html=True)
