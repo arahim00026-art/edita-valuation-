@@ -11,7 +11,7 @@ st.markdown("""
     /* Main background */
     .main { background-color: #f8f9fa; }
     
-    /* KPI Card Styling - Black Font Fix */
+    /* KPI Card Styling - white Font Fix */
     [data-testid="stMetricValue"] {
         color: #000000 !important;
         font-weight: 700;
