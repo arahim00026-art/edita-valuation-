@@ -135,6 +135,6 @@ with tab3:
 # --- PROFESSIONAL FOOTER: NAVY BLUE & WHITE ---
 st.markdown(f"""
     <div class="footer">
-        Developed by <b>Abdelrahim Elsweedy</b> | FMVA® | Certified Data Analyst | CFA L1 Candidate
+        Developed by <b>Abdelrahim Elsweedy</b> | FMVA® | Certified Data Analyst 
     </div>
     """, unsafe_allow_html=True)
