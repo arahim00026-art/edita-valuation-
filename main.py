@@ -5,93 +5,130 @@ import numpy as np
 
 st.set_page_config(page_title="Edita Financial Intelligence", layout="wide")
 
-# --- CUSTOM CSS FOR PROFESSIONAL LOOK ---
+# --- ADVANCED CUSTOM CSS ---
 st.markdown("""
     <style>
-    .main { background-color: #f5f7f9; }
-    .stMetric { background-color: #ffffff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    /* Main background */
+    .main { background-color: #f8f9fa; }
+    
+    /* KPI Card Styling - Black Font Fix */
+    [data-testid="stMetricValue"] {
+        color: #000000 !important;
+        font-weight: 700;
+        font-size: 2rem;
+    }
+    [data-testid="stMetricLabel"] {
+        color: #333333 !important;
+        font-weight: 500;
+    }
+    
+    /* Footer Styling */
+    .footer {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        background-color: #ffffff;
+        color: #666666;
+        text-align: center;
+        padding: 10px;
+        font-size: 14px;
+        border-top: 1px solid #eaeaea;
+        z-index: 999;
+    }
+    
+    /* Metric Container */
+    div[data-testid="metric-container"] {
+        background-color: #ffffff;
+        border: 1px solid #e0e0e0;
+        padding: 20px;
+        border-radius: 8px;
+    }
     </style>
     """, unsafe_allow_html=True)
 
-st.title("🍰 Edita Food Industries: Financial Performance & Valuation")
+st.title("🍰 Edita Food Industries: Strategic Performance Review")
 st.markdown("---")
 
 # --- SIDEBAR: DYNAMIC ASSUMPTIONS ---
-st.sidebar.header("🕹️ Control Panel")
-st.sidebar.markdown("Adjust these to stress-test the valuation.")
-rev_growth = st.sidebar.slider("Annual Revenue Growth (%)", 0.05, 0.40, 0.20)
-wacc = st.sidebar.slider("WACC (Discount Rate) (%)", 0.10, 0.25, 0.18)
+st.sidebar.header("🕹️ Scenario Manager")
+st.sidebar.info("Adjust metrics to simulate economic shifts.")
+rev_growth = st.sidebar.slider("Revenue Growth (%)", 0.05, 0.45, 0.20)
+wacc = st.sidebar.slider("WACC / Hurdle Rate (%)", 0.10, 0.25, 0.18)
 
 # --- DATA ENGINE ---
-# Historicals
 df_hist = pd.DataFrame({
-    'Year': [2024, 2025],
-    'Revenue': [16.15, 20.92],
-    'Net_Profit': [1.61, 2.70],
-    'Gross_Margin': [30.4, 33.9]
+    'Year': [2021, 2022, 2023, 2024, 2025],
+    'Revenue': [5.25, 7.67, 12.12, 16.15, 20.92],
+    'Gross_Margin': [31.2, 29.8, 32.5, 30.4, 33.9],
+    'Net_Margin': [10.1, 9.5, 9.2, 8.8, 11.7]
 })
 
-# Projections
+# Forecast Logic
 current_rev = 20.92
 forecast = []
-for year in [2026, 2027, 2028, 2029, 2030]:
+for year in range(2026, 2031):
     current_rev *= (1 + rev_growth)
-    forecast.append({'Year': year, 'Revenue': current_rev, 'Net_Profit': current_rev * 0.12})
-df_full = pd.concat([df_hist, pd.DataFrame(forecast)])
+    forecast.append({'Year': year, 'Revenue': current_rev})
+df_forecast = pd.DataFrame(forecast)
 
-# --- TOP ROW: KPI METRICS ---
-col_m1, col_m2, col_m3, col_m4 = st.columns(4)
-col_m1.metric("FY25 Revenue", "20.9B EGP", "+29.5%")
-col_m2.metric("Net Profit Margin", "11.7%", "+2.9%")
-col_m3.metric("ROE", "39.9%", "Premium")
-col_m4.metric("Current Ratio", "1.27x", "Healthy")
+# --- TOP ROW: KPI METRICS (Now in Bold Black) ---
+m_col1, m_col2, m_col3, m_col4 = st.columns(4)
+m_col1.metric("FY25 Revenue", "20.9B EGP", "+29.5%")
+m_col2.metric("Net Margin", "11.7%", "+2.9% bps")
+m_col3.metric("ROE (Actual)", "39.9%", "High Rank")
+m_col4.metric("Current Ratio", "1.27x", "Stable")
 
 # --- TABBED ANALYSIS ---
-tab1, tab2, tab3 = st.tabs(["📈 Growth & Profitability", "💧 Liquidity & Risk", "💎 Valuation Model"])
+tab1, tab2, tab3 = st.tabs(["📊 Growth & Profitability", "🛡️ Risk & Liquidity", "💎 Equity Valuation"])
 
 with tab1:
-    st.subheader("Profitability Expansion")
-    c1, c2 = st.columns(2)
-    with c1:
-        st.write("Revenue Trajectory")
-        st.area_chart(df_full.set_index('Year')['Revenue'], color="#1f77b4")
-    with c2:
-        st.write("Margin Trends (%)")
-        # Reuse your margins logic here
-        st.line_chart(df_hist.set_index('Year')['Gross_Margin'], color="#2ca02c")
+    st.subheader("Historical vs. Projected Revenue")
+    st.area_chart(pd.concat([df_hist[['Year', 'Revenue']], df_forecast]).set_index('Year'), color="#005a9c")
+    
+    st.markdown("---")
+    st.subheader("Margin Expansion Analysis (%)")
+    st.line_chart(df_hist.set_index('Year')[['Gross_Margin', 'Net_Margin']], color=["#2ca02c", "#d62728"])
+    st.caption("Green: Gross Margin | Red: Net Margin. Note the upward trajectory in FY25 due to price optimization.")
 
 with tab2:
-    st.subheader("Liquidity Profile")
-    # Visualization for Current/Quick Ratios
-    l_col1, l_col2 = st.columns(2)
-    with l_col1:
-        st.write("Current vs Quick Ratio")
-        liq_df = pd.DataFrame({'Metric': ['Current', 'Quick'], 'Value': [1.27, 0.90]})
-        st.bar_chart(liq_df.set_index('Metric'))
-    with l_col2:
-        st.info("The Quick Ratio of 0.90x suggests a lean inventory management strategy, typical for high-turnover FMCG leaders in Egypt.")
+    st.subheader("Short-Term Solvency")
+    liq_col1, liq_col2 = st.columns([2, 1])
+    with liq_col1:
+        liq_df = pd.DataFrame({'Metric': ['Current Ratio', 'Quick Ratio'], 'Value': [1.27, 0.90]})
+        st.bar_chart(liq_df.set_index('Metric'), color="#ff7f0e")
+    with liq_col2:
+        st.write("**Analyst Note:**")
+        st.write("Edita maintains an efficient cash-conversion cycle. While the Quick Ratio is below 1.0, the high inventory turnover of snacks mitigates liquidity risk.")
 
 with tab3:
-    st.subheader("Valuation Framework")
+    st.subheader("Relative & Fundamental Valuation")
     v_col1, v_col2 = st.columns([2, 1])
-    with v_col1:
-        # DCF Calculation
-        terminal_val = (forecast[-1]['Revenue'] * 0.12) / (wacc - 0.03)
-        shares = 1400027312
-        fair_value_share = (terminal_val * 1e9 / shares)
-        
-        st.write("Football Field: Valuation Ranges")
-        valuation_data = {
-            'Method': ['DCF Estimate', 'Market Median (PE)', 'Premium Target (PE)', 'Current Price'],
-            'Price': [fair_value_share, 34.50, 38.89, 30.49]
-        }
-        st.bar_chart(pd.DataFrame(valuation_data).set_index('Method'))
     
+    # Simple DCF Logic
+    shares = 1400027312
+    term_value = (df_forecast.iloc[-1]['Revenue'] * 0.12) / (wacc - 0.03)
+    dcf_price = (term_value * 1e9 / shares)
+    
+    with v_col1:
+        val_df = pd.DataFrame({
+            'Method': ['Market Price', 'Sector Avg (PE)', 'DCF Estimate', 'Premium Target'],
+            'Price': [30.49, 33.50, dcf_price, 38.89]
+        })
+        st.bar_chart(val_df.set_index('Method'), color="#9467bd")
+        
     with v_col2:
-        st.success(f"**DCF Fair Value:** {fair_value_share:.2f} EGP")
-        st.write(f"**Upside/Downside:** {((fair_value_share/30.49)-1)*100:.1f}%")
-        st.markdown("---")
-        st.warning("Valuation is highly sensitive to WACC and Terminal Growth.")
+        st.metric("DCF Intrinsic Value", f"{dcf_price:.2f} EGP")
+        upside = ((dcf_price/30.49)-1)*100
+        st.write(f"**Implied Upside:** {upside:+.1f}%")
+        if upside > 0:
+            st.success("Rating: BUY")
+        else:
+            st.error("Rating: OVERVALUED")
 
-st.markdown("---")
-st.caption("Data Source: Edita FY2025 Consolidated Financial Statements | Model by [Your Name]")
+# --- PROFESSIONAL FOOTER ---
+st.markdown(f"""
+    <div class="footer">
+        Developed by <b>Abdelrahim Elsweedy</b> | Senior Student at University of Hertfordshire | CFA L1 Candidate
+    </div>
+    """, unsafe_allow_html=True)
