@@ -11,38 +11,44 @@ st.markdown("""
     /* Main background */
     .main { background-color: #f8f9fa; }
     
-    /* KPI Card Styling - white Font Fix */
+    /* KPI Card Styling - White Font and Background Fix */
     [data-testid="stMetricValue"] {
-        color: #000000 !important;
+        color: #FFFFFF !important;  /* Changed to White */
         font-weight: 700;
         font-size: 2rem;
     }
     [data-testid="stMetricLabel"] {
-        color: #333333 !important;
+        color: #E0E0E0 !important;  /* Light Gray for better readability against white numbers */
         font-weight: 500;
     }
     
-    /* Footer Styling */
+    /* Container for KPIs to ensure background stays professional */
+    div[data-testid="metric-container"] {
+        background-color: #262730; /* Keeping a dark background so white text pops */
+        border: 1px solid #4B4B4B;
+        padding: 20px;
+        border-radius: 8px;
+    }
+    
+    /* Footer Styling - Navy Blue with White Font */
     .footer {
         position: fixed;
         left: 0;
         bottom: 0;
         width: 100%;
-        background-color: #ffffff;
-        color: #666666;
+        background-color: #000080; /* Navy Blue */
+        color: #FFFFFF;           /* White Font */
         text-align: center;
-        padding: 10px;
+        padding: 12px;
         font-size: 14px;
-        border-top: 1px solid #eaeaea;
+        font-weight: 500;
+        border-top: 1px solid #000040;
         z-index: 999;
     }
     
-    /* Metric Container */
-    div[data-testid="metric-container"] {
-        background-color: #ffffff;
-        border: 1px solid #e0e0e0;
-        padding: 20px;
-        border-radius: 8px;
+    /* Adjusting the main content area to not be hidden by the fixed footer */
+    .block-container {
+        padding-bottom: 60px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -72,7 +78,7 @@ for year in range(2026, 2031):
     forecast.append({'Year': year, 'Revenue': current_rev})
 df_forecast = pd.DataFrame(forecast)
 
-# --- TOP ROW: KPI METRICS (Now in Bold Black) ---
+# --- TOP ROW: KPI METRICS (Now White on Dark Background) ---
 m_col1, m_col2, m_col3, m_col4 = st.columns(4)
 m_col1.metric("FY25 Revenue", "20.9B EGP", "+29.5%")
 m_col2.metric("Net Margin", "11.7%", "+2.9% bps")
@@ -89,7 +95,7 @@ with tab1:
     st.markdown("---")
     st.subheader("Margin Expansion Analysis (%)")
     st.line_chart(df_hist.set_index('Year')[['Gross_Margin', 'Net_Margin']], color=["#2ca02c", "#d62728"])
-    st.caption("Green: Gross Margin | Red: Net Margin. Note the upward trajectory in FY25 due to price optimization.")
+    st.caption("Note the upward trajectory in FY25 due to price optimization and regional expansion.")
 
 with tab2:
     st.subheader("Short-Term Solvency")
@@ -99,13 +105,13 @@ with tab2:
         st.bar_chart(liq_df.set_index('Metric'), color="#ff7f0e")
     with liq_col2:
         st.write("**Analyst Note:**")
-        st.write("Edita maintains an efficient cash-conversion cycle. While the Quick Ratio is below 1.0, the high inventory turnover of snacks mitigates liquidity risk.")
+        st.write("Edita maintains an efficient cash-conversion cycle. While the Quick Ratio is below 1.0, high turnover minimizes liquidity risk.")
 
 with tab3:
     st.subheader("Relative & Fundamental Valuation")
     v_col1, v_col2 = st.columns([2, 1])
     
-    # Simple DCF Logic
+    # Valuation Logic
     shares = 1400027312
     term_value = (df_forecast.iloc[-1]['Revenue'] * 0.12) / (wacc - 0.03)
     dcf_price = (term_value * 1e9 / shares)
@@ -126,9 +132,9 @@ with tab3:
         else:
             st.error("Rating: OVERVALUED")
 
-# --- PROFESSIONAL FOOTER ---
+# --- PROFESSIONAL FOOTER: NAVY BLUE & WHITE ---
 st.markdown(f"""
     <div class="footer">
-        Developed by <b>Abdelrahim Elsweedy</b> | FMVA | Certified Data Analayst
+        Developed by <b>Abdelrahim Elsweedy</b> | FMVA® | Certified Data Analyst | CFA L1 Candidate
     </div>
     """, unsafe_allow_html=True)
